@@ -1,0 +1,24 @@
+{
+  "name": "teamsocket",
+  "version": "1.0.0",
+  "description": "Aplicación web colaborativa de mensajería en tiempo real que utiliza el protocolo WebSocket para establecer comunicación bidireccional persistente entre clientes y servidor. El sistema permite la interacción simultánea de usuarios, administración dinámica de conexiones y almacenamiento básico de información relevante.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fer-Pizar/TeamSocket.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Fer-Pizar/TeamSocket/issues"
+  },
+  "homepage": "https://github.com/Fer-Pizar/TeamSocket#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "ws": "^8.20.0"
+  }
+}
