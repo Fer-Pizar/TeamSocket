@@ -3,13 +3,13 @@ const http = require('http');
 const WebSocket = require('ws');
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
-require('dotenv').config(); // Esto lee el archivo .env
+require('dotenv').config();
 
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-// CONEXIÓN A LA BASE DE DATOS
+// CONEXIÓN A LA BASE DE DATOS 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -17,7 +17,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 wss.on('connection', async (ws) => {
     console.log('Cliente conectado');
 
-    // 1. Al conectarse, enviamos el historial de la tabla que creaste
+    // 1. CARGAR HISTORIAL 
     const { data: history } = await supabase
         .from('messages')
         .select('*')
@@ -31,7 +31,6 @@ wss.on('connection', async (ws) => {
         const data = JSON.parse(message.toString());
         
         // 2. GUARDAR EN LA BASE DE DATOS
-        // Usamos los nombres de columna que pusiste en el SQL Query
         await supabase.from('messages').insert([
             { sender_name: data.user, content: data.text }
         ]);
