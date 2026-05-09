@@ -4,6 +4,8 @@
   "description": "Aplicación web colaborativa de mensajería en tiempo real que utiliza el protocolo WebSocket para establecer comunicación bidireccional persistente entre clientes y servidor. El sistema permite la interacción simultánea de usuarios, administración dinámica de conexiones y almacenamiento básico de información relevante.",
   "main": "index.js",
   "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -18,6 +20,8 @@
   },
   "homepage": "https://github.com/Fer-Pizar/TeamSocket#readme",
   "dependencies": {
+    "@supabase/supabase-js": "^2.105.4",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "ws": "^8.20.0"
   }
