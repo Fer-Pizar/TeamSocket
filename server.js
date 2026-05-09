@@ -18,30 +18,44 @@ wss.on('connection', async (ws) => {
     console.log('Cliente conectado');
 
     // 1. CARGAR HISTORIAL 
-    const { data: history } = await supabase
+    try {
+        const { data: history } = await supabase
         .from('messages')
         .select('*')
         .order('created_at', { ascending: true });
     
-    if (history) {
-        ws.send(JSON.stringify({ type: 'history', data: history }));
+        if (history) {
+            ws.send(JSON.stringify({ type: 'history', data: history }));
+        }
+    } catch (error) {
+        console.error("Error al cargar el Historial", err)
+    }
+    
+    ws.on('message', async (message) => {
+    let data;
+    const rawMessage = message.toString();
+
+    try {
+        // Intentamos tratarlo como JSON
+        data = JSON.parse(rawMessage);
+    } catch (e) {
+        // Si falla, es porque es texto plano. Creamos el objeto manualmente.
+        console.log("Se recibió texto plano, convirtiendo a objeto...");
+        data = { user: "Desconocido", text: rawMessage };
     }
 
-    ws.on('message', async (message) => {
-        const data = JSON.parse(message.toString());
-        
-        // 2. GUARDAR EN LA BASE DE DATOS
-        await supabase.from('messages').insert([
-            { sender_name: data.user, content: data.text }
-        ]);
+    // Ahora 'data' siempre es un objeto, así que Supabase no fallará
+    await supabase.from('messages').insert([
+        { sender_name: data.user, content: data.text }
+    ]);
 
-        // 3. REENVIAR A TODOS (Broadcast)
-        wss.clients.forEach((client) => {
-            if (client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify(data));
-            }
-        });
+    // Broadcast...
+    wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(data));
+        }
     });
+});
 
     ws.on('close', () => console.log('Cliente desconectado'));
 });
