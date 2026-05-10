@@ -5,14 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TeamSocket | Chat Corporativo</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div class="app-wrapper">
         <header class="navbar">
             <div class="logo">Team<span>Socket</span></div>
             <div class="user-auth">
-                <span id="user-name">Invitado</span>
-                <button class="login-btn">Acceder con Google</button>
+                <span id="user-name-display">Cargando...</span>
+                <button id="google-login-btn" class="login-btn">Acceder con Google</button>
             </div>
         </header>
 
@@ -20,29 +21,23 @@
             <aside class="sidebar">
                 <h3>Colaboradores</h3>
                 <ul id="user-list">
-                    <li><span class="status online"></span> Usuario_1234 (Tú)</li>
-                    <li><span class="status online"></span> Usuario_8821</li>
-                    <li><span class="status offline"></span> Usuario_4402</li>
+                    <li><span class="status online"></span> Red local (WebSocket)</li>
                 </ul>
             </aside>
 
             <section class="chat-container">
-                <div id="chat-messages" class="messages-area">
-                    <div class="message system">Bienvenido al canal de colaboración técnica de TeamSocket.</div>
-                    <div class="message other">
-                        <span class="sender">Usuario_8821:</span>
-                        <p>Hola equipo, ¿cómo va el progreso del sistema?</p>
-                    </div>
+                <div id="messages" class="messages-area">
+                    <div class="message system">Bienvenido al canal de TeamSocket. Inicia sesión para chatear.</div>
                 </div>
                 
-                <form id="chat-form" class="input-group">
-                    <input type="text" id="message-input" placeholder="Escribe un mensaje aquí..." required>
-                    <button type="submit" id="send-btn">Enviar</button>
+                <form id="chat-form" class="input-group" onsubmit="event.preventDefault();">
+                    <input type="text" id="messageInput" placeholder="Escribe un mensaje aquí..." required>
+                    <button type="button" onclick="sendMessage()" id="send-btn">Enviar</button>
                 </form>
             </section>
         </main>
     </div>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="script.js"></script>
+
+    <script src="app.js"></script>
 </body>
 </html>
