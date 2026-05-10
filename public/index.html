@@ -5,9 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TeamSocket | Chat Corporativo</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="login.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+    
+    <div id="login-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h2>TeamSocket</h2>
+            <p>Inicia sesión para continuar</p>
+            
+            <button id="modal-google-btn" class="btn google-btn">Continuar con Google</button>
+            
+            <div class="divider"><span>O</span></div>
+            
+            <input type="text" id="guest-name-input" placeholder="Tu nombre (opcional)">
+            <button id="modal-guest-btn" class="btn guest-btn">Entrar como Invitado</button>
+        </div>
+    </div>
     <div class="app-wrapper">
         <header class="navbar">
             <div class="brand-center">
@@ -25,7 +40,10 @@
 
             <div class="user-auth">
                 <span id="user-name-display">Cargando...</span>
-                <button id="google-login-btn" class="login-btn">Acceder con Google</button>
+                
+                <button id="open-login-btn" class="login-btn" style="margin-left: 10px;">Iniciar Sesión</button>
+                
+                <button id="logout-btn" class="login-btn" style="display: none; background-color: #dc3545; margin-left: 10px;">Cerrar Sesión</button>
             </div>
         </header>
 
@@ -49,7 +67,9 @@
             </section>
         </main>
     </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="login.js"></script>
+    <script src="auth.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
