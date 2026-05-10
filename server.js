@@ -2,6 +2,8 @@ const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
 const path = require('path');
+const { createClient } = require('@supabase/supabase-js');
+require('dotenv').config();
 
 const app = express();
 const server = http.createServer(app);
@@ -79,5 +81,5 @@ wss.on('connection', async (ws) => {
 });
 
 server.listen(3000, () => {
-    console.log('Servidor en http://localhost:3000');
+    console.log(' Servidor en http://localhost:3000');
 });

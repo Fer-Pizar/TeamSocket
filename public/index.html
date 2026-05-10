@@ -10,7 +10,19 @@
 <body>
     <div class="app-wrapper">
         <header class="navbar">
-            <div class="logo">Team<span>Socket</span></div>
+            <div class="brand-center">
+                <img id="themeLogo" src="assets/dark_logo.png" alt="TeamSocket Logo" class="theme-logo">
+            </div>
+
+            <div class="theme-control">
+                <label for="themeSelect">Tema: </label>
+                <select id="themeSelect">
+                    <option value="default">Predeterminado</option>
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                </select>
+            </div>
+
             <div class="user-auth">
                 <span id="user-name-display">Cargando...</span>
                 <button id="google-login-btn" class="login-btn">Acceder con Google</button>
@@ -37,11 +49,7 @@
             </section>
         </main>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="auth.js"></script>
+
     <script src="app.js"></script>
-    <script>
-        // Si quieres poner logs de control, hazlo en una etiqueta aparte
-        console.log("Scripts de TeamSocket cargados correctamente.");
-    </script>
 </body>
+</html>

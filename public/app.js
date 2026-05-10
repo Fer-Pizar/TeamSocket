@@ -1,20 +1,20 @@
-const socket = new WebSocket('ws://localhost:3000');
+const ws = new WebSocket(`ws://${window.location.host}`);
 
-const chatHistory = document.getElementById('messages');
+const messagesArea = document.getElementById('messages');
+const messageInput = document.getElementById('messageInput');
+const usernameInput = document.getElementById('usernameInput');
 
-socket.onmessage = (event) => {
-    const messageData = event.data;
-    
-    const messageElement = document.createElement('li');
-    
-    const now = new Date();
-    const time = now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
-    
-    messageElement.innerHTML = `<strong>${time}</strong> - ${messageData}`;
-    
-    chatHistory.appendChild(messageElement);
+ws.onopen = () => console.log(' Conectado al Chat');
 
-    chatHistory.scrollTop = chatHistory.scrollHeight;
+ws.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    if (data.type === 'history') {
+        data.data.forEach(msg => {
+            mostrarMensaje(msg.content, msg.sender_name);
+        });
+    } else {
+        mostrarMensaje(data.text, data.user);
+    }
 };
 
 function sendMessage() {
