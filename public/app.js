@@ -39,7 +39,7 @@ function mostrarMensaje(texto, usuario) {
     const item = document.createElement('li');
     item.style.padding = "10px";
     item.style.listStyle = "none";
-    item.style.borderBottom = "1px solid #eee";
+    //item.style.borderBottom = "1px solid #eee";
     
     
     if (usuario === "Sistema") {
@@ -47,4 +47,31 @@ function mostrarMensaje(texto, usuario) {
     } else {
         item.innerHTML = `<strong style="color: #007bff;">${usuario}:</strong> ${texto}`;
     }
+    messagesArea.appendChild(item);
+    messagesArea.scrollTop = messagesArea.scrollHeight;
 }
+
+const themeSelect = document.getElementById('themeSelect');
+const themeLogo = document.getElementById('themeLogo');
+
+function applyTheme(theme) {
+    document.body.classList.remove('theme-default', 'theme-light', 'theme-dark');
+    document.body.classList.add(`theme-${theme}`);
+
+    if (theme === 'light') {
+        themeLogo.src = 'assets/light_logo.png';
+    } else {
+        themeLogo.src = 'assets/dark_logo.png';
+    }
+
+    localStorage.setItem('teamsocket-theme', theme);
+}
+
+const savedTheme = localStorage.getItem('teamsocket-theme') || 'default';
+
+applyTheme(savedTheme);
+themeSelect.value = savedTheme;
+
+themeSelect.addEventListener('change', () => {
+    applyTheme(themeSelect.value);
+});

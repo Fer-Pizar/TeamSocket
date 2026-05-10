@@ -6,72 +6,60 @@ async function iniciarApp() {
         const config = await response.json();
         const { createClient } = supabase;
         supabaseClient = createClient(config.supabaseUrl, config.supabaseKey);
+        
+        const modal = document.getElementById('login-modal');
+        const userNameDisplay = document.getElementById('user-name-display');
+        
+        // Atrapamos los botones
+        const openLoginBtn = document.getElementById('open-login-btn');
+        const logoutBtn = document.getElementById('logout-btn'); 
 
-        // Este bloque es el que "limpia" la interfaz automáticamente
+        console.log("🔎 Botón de iniciar sesión encontrado:", openLoginBtn);
+
+        // 1. ESCUCHAMOS LOS CAMBIOS DE SESIÓN
         supabaseClient.auth.onAuthStateChange((event, session) => {
-    console.log("Estado de Auth cambiado:", event, session); // Para ver qué pasa
+            if (session && session.user) {
+                // LOGUEADO
+                const name = session.user.user_metadata?.full_name || session.user.email || "Usuario";
+                window.currentUserDisplayName = name;
+                if (userNameDisplay) userNameDisplay.textContent = name;
+                
+                if (modal) modal.classList.add('hidden');
+                if (openLoginBtn) openLoginBtn.style.display = 'none';
+                if (logoutBtn) logoutBtn.style.display = 'inline-block'; 
+            } else {
+                // INVITADO O NO LOGUEADO
+                if (openLoginBtn) openLoginBtn.style.display = 'inline-block';
+                if (logoutBtn) logoutBtn.style.display = 'none'; 
 
-    if (session && session.user) {
-        // 🔥 TRUCO: Si no hay full_name, usamos el correo, y si no, "Usuario"
-        const name = session.user.user_metadata?.full_name || session.user.email || "Usuario Logueado";
-        
-        window.currentUserDisplayName = name;
-        document.getElementById('user-name-display').textContent = name;
-        document.getElementById('google-login-btn').style.display = 'none';
-    } else {
-        if (!window.currentUserDisplayName) {
-            window.currentUserDisplayName = generarNombreAleatorio();
-        }
-        document.getElementById('user-name-display').textContent = window.currentUserDisplayName + " (Invitado)";
-        document.getElementById('google-login-btn').style.display = 'block';
-    }
-});
-
-        setupLoginButton();
-    } catch (error) {
-        console.error("Error:", error);
-    }
-}
-function setupLoginButton() {
-    const btn = document.getElementById('google-login-btn');
-    if (btn) {
-        btn.addEventListener('click', async () => {
-            await supabaseClient.auth.signInWithOAuth({
-                provider: 'google',
-                options: { redirectTo: window.location.origin }
-            });
+                if (!window.currentUserDisplayName) {
+                    if (modal) modal.classList.remove('hidden');
+                }
+            }
         });
-    }
-}
-function generarNombreAleatorio() {
-    const numero = Math.floor(1000 + Math.random() * 9000);
-    return `Colaborador_${numero}`;
-}
-// --- AQUÍ ESTÁ TU FUNCIÓN CHECKUSER ---
-async function checkUser() {
-    // Forzamos a Supabase a buscar la sesión actual en el almacenamiento local
-    const { data: { session }, error } = await supabaseClient.auth.getSession();
-    
-    const userNameDisplay = document.getElementById('user-name-display');
-    const loginBtn = document.getElementById('google-login-btn');
 
-    if (session && session.user) {
-        // LOGIN EXITOSO
-        const userFullName = session.user.user_metadata.full_name || session.user.email;
-        if (userNameDisplay) userNameDisplay.textContent = userFullName;
-        if (loginBtn) loginBtn.style.display = 'none';
-        
-        window.currentUserDisplayName = userFullName;
-        console.log("👤 Sesión recuperada:", userFullName);
-    } else {
-        // NO HAY LOGIN -> ASIGNAR RANDOM
-        const nombreRandom = generarNombreAleatorio();
-        window.currentUserDisplayName = nombreRandom;
-        
-        if (userNameDisplay) userNameDisplay.textContent = nombreRandom + " (Invitado)";
-        if (loginBtn) loginBtn.style.display = 'block';
-        
-        console.log("ℹ️ Usando nombre aleatorio:", nombreRandom);
+        // 2. CONFIGURAMOS EL MODAL (login.js)
+        configurarModalLogin(supabaseClient);
+
+        // 3. LE PONEMOS LA "OREJA" AL BOTÓN DE INICIAR SESIÓN
+        if (openLoginBtn) {
+            openLoginBtn.addEventListener('click', () => {
+                console.log("✅ ¡Clic detectado! Abriendo modal...");
+                if (modal) modal.classList.remove('hidden');
+            });
+        }
+
+        // 4. LE PONEMOS LA "OREJA" AL BOTÓN DE CERRAR SESIÓN
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', async () => {
+                await supabaseClient.auth.signOut();
+                window.currentUserDisplayName = null;
+                window.location.reload(); 
+            });
+        }
+
+    } catch (error) {
+        console.error("Error al iniciar:", error);
     }
 }
 
