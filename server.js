@@ -9,22 +9,27 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-app.use(express.static(path.join(__dirname, 'public')));
+// IMPORTANTE: Definir /config antes que los estáticos
+app.get('/config', (req, res) => {
+    res.json({
+        supabaseUrl: process.env.SUPABASE_URL,
+        supabaseKey: process.env.SUPABASE_KEY
+    });
+});
+
+app.use(express.static(path.join(__dirname, 'public')));    
 
 wss.on('connection', async (ws) => {
     console.log(' Cliente conectado');
 
-   
     wss.clients.forEach((client) => {
         if (client !== ws && client.readyState === WebSocket.OPEN) {
             client.send(JSON.stringify({ user: "Sistema", text: " ¡Un nuevo usuario se ha unido al chat!" }));
         }
     });
 
-   
     try {
         const { data: history, error } = await supabase
             .from('messages')
@@ -39,28 +44,32 @@ wss.on('connection', async (ws) => {
         console.error("Error al cargar historial:", error);
     }
     
-   
     ws.on('message', async (message) => {
-        let data;
         try {
-            data = JSON.parse(message.toString());
+            const data = JSON.parse(message.toString());
+
+            // Guardar en la base de datos
+            const { error } = await supabase.from('messages').insert([
+                { 
+                    sender_name: data.user, 
+                    content: data.text 
+                }
+            ]);
+
+            if (error) throw error;
+
+            // Reenviar a todos los clientes
+            wss.clients.forEach((client) => {
+                if (client.readyState === WebSocket.OPEN) {
+                    client.send(JSON.stringify(data));
+                }
+            });
+
         } catch (e) {
-            data = { user: "Desconocido", text: message.toString() };
+            console.error("Error en el mensaje:", e);
         }
-
-        await supabase.from('messages').insert([
-            { sender_name: data.user, content: data.text }
-        ]);
-
-      
-        wss.clients.forEach((client) => {
-            if (client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify(data));
-            }
-        });
     });
-
-   
+        
     ws.on('close', () => {
         console.log(' Cliente desconectado');
         wss.clients.forEach((client) => {
