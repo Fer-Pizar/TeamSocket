@@ -1,8 +1,43 @@
-<div id="chat-container">
-    <input type="text" id="usernameInput" placeholder="Tu nombre...">
-    <ul id="messages" style="height: 300px; overflow-y: auto; border: 1px solid #ccc;">
-        </ul>
-    <input type="text" id="messageInput" placeholder="Escribe un mensaje...">
-    <button onclick="sendMessage()">Enviar</button>
-</div>
-<script src="app.js"></script>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamSocket | Chat Corporativo</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="app-wrapper">
+        <header class="navbar">
+            <div class="logo">Team<span>Socket</span></div>
+            <div class="user-auth">
+                <span id="user-name-display">Cargando...</span>
+                <button id="google-login-btn" class="login-btn">Acceder con Google</button>
+            </div>
+        </header>
+
+        <main class="main-container">
+            <aside class="sidebar">
+                <h3>Colaboradores</h3>
+                <ul id="user-list">
+                    <li><span class="status online"></span> Red local (WebSocket)</li>
+                </ul>
+            </aside>
+
+            <section class="chat-container">
+                <div id="messages" class="messages-area">
+                    <div class="message system">Bienvenido al canal de TeamSocket. Inicia sesión para chatear.</div>
+                </div>
+                
+                <form id="chat-form" class="input-group" onsubmit="event.preventDefault();">
+                    <input type="text" id="messageInput" placeholder="Escribe un mensaje aquí..." required>
+                    <button type="button" onclick="sendMessage()" id="send-btn">Enviar</button>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
