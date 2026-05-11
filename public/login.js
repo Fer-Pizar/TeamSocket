@@ -1,11 +1,9 @@
-// login.js
 
 function generarNombreAleatorio() {
     const num = Math.floor(1000 + Math.random() * 9000);
     return `Colaborador_${num}`;
 }
 
-// ESTA ES LA FUNCIÓN QUE TU AUTH.JS ESTÁ BUSCANDO
 function configurarModalLogin(supabaseClient) {
     const modal = document.getElementById('login-modal');
     const googleBtn = document.getElementById('modal-google-btn');
@@ -13,8 +11,7 @@ function configurarModalLogin(supabaseClient) {
     const nameInput = document.getElementById('guest-name-input');
     const userNameDisplay = document.getElementById('user-name-display');
 
-    if (googleBtn) {
-        // ✅ BIEN: Esto espera pacientemente tu clic
+    if (googleBtn) { 
         googleBtn.onclick = async () => {
     await supabaseClient.auth.signInWithOAuth({
         provider: 'google',

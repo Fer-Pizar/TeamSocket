@@ -163,7 +163,7 @@ main
  ├── feature/ui-ux-design
  ├── feature/client-javascript
  ├── feature/persistence
- └── feature/spa-base-readme-ux   ← rama de este integrante
+ └── feature/spa-base-readme-ux
 ```
 
 Cada integrante trabaja en su rama y abre un **Pull Request** hacia `main` cuando su tarea está completa.

@@ -21,7 +21,6 @@ function sendMessage() {
     const input = document.getElementById('messageInput');
     const user = window.currentUserDisplayName || "Cargando..."; 
     
-    // 🔥 CAMBIO AQUÍ: Usamos 'ws' en lugar de 'socket'
     if (input.value.trim() !== "" && ws.readyState === WebSocket.OPEN) {
         const messageObject = {
             user: user,
@@ -29,7 +28,7 @@ function sendMessage() {
         };
         
         console.log("Enviando mensaje:", messageObject);
-        ws.send(JSON.stringify(messageObject)); // 🔥 CAMBIO AQUÍ: Usamos 'ws'
+        ws.send(JSON.stringify(messageObject)); 
         input.value = '';
     } else {
         console.warn("No se pudo enviar: Socket cerrado o mensaje vacío");
