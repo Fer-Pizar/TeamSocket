@@ -3,73 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TeamSocket — Chat colaborativo en tiempo real para equipos">
     <title>TeamSocket | Chat Corporativo</title>
+
+    <!-- Estilos principales del proyecto -->
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="login.css">
+
+    <!-- SDK de Supabase para autenticación e historial -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body>
-    
-    <div id="login-modal" class="modal-overlay hidden">
+<body class="theme-default">
+
+    <!-- ===== MODAL DE LOGIN ===== -->
+    <!-- Se muestra al hacer clic en "Iniciar Sesión"; oculto por defecto -->
+    <div id="login-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
         <div class="modal-content">
-            <h2>TeamSocket</h2>
+            <h2 id="modal-title">TeamSocket</h2>
             <p>Inicia sesión para continuar</p>
-            
-            <button id="modal-google-btn" class="btn google-btn">Continuar con Google</button>
-            
+
+            <button id="modal-google-btn" class="btn google-btn">
+                Continuar con Google
+            </button>
+
             <div class="divider"><span>O</span></div>
-            
-            <input type="text" id="guest-name-input" placeholder="Tu nombre (opcional)">
-            <button id="modal-guest-btn" class="btn guest-btn">Entrar como Invitado</button>
+
+            <input
+                type="text"
+                id="guest-name-input"
+                placeholder="Tu nombre (opcional)"
+                aria-label="Nombre de invitado"
+                maxlength="30"
+            >
+            <button id="modal-guest-btn" class="btn guest-btn">
+                Entrar como Invitado
+            </button>
         </div>
     </div>
+
+    <!-- ===== APLICACIÓN PRINCIPAL (SPA) ===== -->
     <div class="app-wrapper">
-        <header class="navbar">
+
+        <!-- BARRA DE NAVEGACIÓN SUPERIOR -->
+        <header class="navbar" role="banner">
+
+            <!-- Logo centrado con soporte para cambio de tema -->
             <div class="brand-center">
-                <img id="themeLogo" src="assets/dark_logo.png" alt="TeamSocket Logo" class="theme-logo">
+                <img
+                    id="themeLogo"
+                    src="assets/dark_logo.png"
+                    alt="TeamSocket Logo"
+                    class="theme-logo"
+                >
             </div>
 
+            <!-- Selector de tema visual -->
             <div class="theme-control">
-                <label for="themeSelect">Tema: </label>
-                <select id="themeSelect">
+                <label for="themeSelect">Tema:</label>
+                <select id="themeSelect" aria-label="Cambiar tema visual">
                     <option value="default">Predeterminado</option>
                     <option value="light">Light</option>
                     <option value="dark">Dark</option>
                 </select>
             </div>
 
+            <!-- Zona de autenticación + estado de conexión WebSocket -->
             <div class="user-auth">
+                <!-- Indicador de estado WebSocket (gestionado por ux.js) -->
+                <span id="connection-status" aria-live="polite" title="Estado de conexión al servidor"></span>
+
                 <span id="user-name-display">Cargando...</span>
-                
-                <button id="open-login-btn" class="login-btn" style="margin-left: 10px;">Iniciar Sesión</button>
-                
-                <button id="logout-btn" class="login-btn" style="display: none; background-color: #dc3545; margin-left: 10px;">Cerrar Sesión</button>
+
+                <button id="open-login-btn" class="login-btn" style="margin-left: 10px;">
+                    Iniciar Sesión
+                </button>
+
+                <button
+                    id="logout-btn"
+                    class="login-btn"
+                    style="display: none; background-color: #dc3545; margin-left: 10px;"
+                >
+                    Cerrar Sesión
+                </button>
             </div>
         </header>
 
-        <main class="main-container">
-            <aside class="sidebar">
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="main-container" role="main">
+
+            <!-- BARRA LATERAL: lista de colaboradores conectados -->
+            <aside class="sidebar" aria-label="Colaboradores en línea">
                 <h3>Colaboradores</h3>
-                <ul id="user-list">
+                <ul id="user-list" role="list">
+                    <!-- Los usuarios conectados se insertan dinámicamente aquí -->
                     <li><span class="status online"></span> Red local (WebSocket)</li>
                 </ul>
             </aside>
 
-            <section class="chat-container">
-                <div id="messages" class="messages-area">
-                    <div class="message system">Bienvenido al canal de TeamSocket. Inicia sesión para chatear.</div>
+            <!-- ÁREA DE CHAT -->
+            <section class="chat-container" aria-label="Chat en tiempo real">
+
+                <!-- Historial de mensajes -->
+                <div id="messages" class="messages-area" role="log" aria-live="polite" aria-label="Mensajes del chat">
+                    <div class="message system">
+                        Bienvenido al canal de TeamSocket. Inicia sesión para chatear.
+                    </div>
                 </div>
-                
+
+                <!-- Indicador de "está escribiendo..." (gestionado por ux.js) -->
+                <div id="typing-indicator" class="typing-hint" aria-live="polite"></div>
+
+                <!-- FORMULARIO DE ENVÍO DE MENSAJES -->
+                <!-- onsubmit previene recarga; el envío real lo maneja sendMessage() -->
                 <form id="chat-form" class="input-group" onsubmit="event.preventDefault();">
-                    <input type="text" id="messageInput" placeholder="Escribe un mensaje aquí..." required>
-                    <button type="button" onclick="sendMessage()" id="send-btn">Enviar</button>
+
+                    <input
+                        type="text"
+                        id="messageInput"
+                        placeholder="Escribe un mensaje... (Enter para enviar)"
+                        autocomplete="off"
+                        maxlength="300"
+                        aria-label="Campo de mensaje"
+                        required
+                    >
+
+                    <!-- Contador de caracteres (gestionado por ux.js) -->
+                    <span id="char-counter" class="char-counter" aria-live="polite">0/300</span>
+
+                    <button
+                        type="button"
+                        id="send-btn"
+                        onclick="sendMessage()"
+                        aria-label="Enviar mensaje"
+                    >
+                        Enviar
+                    </button>
+
                 </form>
             </section>
+
         </main>
     </div>
+
+    <!-- ===== SCRIPTS ===== -->
+    <!-- Orden importante: Supabase → auth → lógica WebSocket → mejoras UX -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="login.js"></script>
     <script src="auth.js"></script>
     <script src="app.js"></script>
+    <script src="ux.js"></script>  <!-- Mejoras UX: Enter, contador, estado conexión -->
+
 </body>
 </html>
